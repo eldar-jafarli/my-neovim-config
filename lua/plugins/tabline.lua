@@ -25,6 +25,19 @@ return {
       ]]
         vim.keymap.set('n', '<M-l>', ':TablineBufferNext<CR>', {})
         vim.keymap.set('n', '<M-h>', ':TablineBufferPrevious<CR>', {})
+        --vim.keymap.set('n', '<M-d>', ':bdelete!<CR> | <CR>', {})
+
+        vim.keymap.set("n", "<M-d>", function()
+            local bufnr = vim.api.nvim_get_current_buf()
+            local buftype = vim.api.nvim_get_option_value("buftype", { buf = bufnr })
+
+            if buftype == "terminal" then
+                vim.cmd("bdelete! " .. bufnr) -- force delete terminal
+            else
+                vim.cmd("bnext")              -- go to the next buffer
+                vim.cmd("bdelete " .. bufnr)  -- delete current one
+            end
+        end, { desc = "Close buffer safely (with terminal support)" })
     end,
     requires = { { 'hoob3rt/lualine.nvim', opt=true }, {'kyazdani42/nvim-web-devicons', opt = true} }
 }
